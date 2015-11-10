@@ -41,11 +41,16 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
             Enumeration enu = m_Instances.enumerateInstances();
             while (enu.hasMoreElements()) {
                 Instance inst = (Instance) enu.nextElement();
-                int n = inst.numValues();
-                Utils.
-                for (int i = 0; i < n; i++) {
-                    System.out.print(inst.value(i));
-                }
+                Instances g = inst.dataset();
+                Enumeration e = g.enumerateInstances();
+                //while (e.hasMoreElements()) {
+                    Instance h = (Instance) e.nextElement();
+                    int n = h.numValues();
+                    for (int i = 0; i < n; i++) {
+                        System.out.print(h.value(i) );
+                    }
+                    System.out.print("-");
+                //}
             }
             System.out.println();
         }
