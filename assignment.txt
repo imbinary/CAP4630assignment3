@@ -1,0 +1,73 @@
+The purpose of this assignment is to acquire experience in implementing a machine learning algorithm and to make use of
+the Weka machine learning library for exercising the implementation and gathering performance statistics.
+
+For this assignment, you must develop a classifier that implements the Perceptron learning algorithm as presented in
+lecture. The classifier must be written in Java and must extend Weka’s Classifier class so it can be invoked from within
+the Weka framework to exercise and evaluate its performance. However, the classifier will not need to implement all
+methods needed for compatibility with the Weka Explorer GUI. It will need only to implement a few skeletal methods so
+that you can invoke the Weka API, as described below.
+
+The classifier will be tested against several test cases, each with a specific data file in Weka’s ARFF format, a number
+of training epochs, and a learning constant. These values will be furnished as command line parameters when the program
+ is run. All data files will involve decimal real feature values and nominal (i.e., enumerated) binary classifications.
+ They will be drawn from the sample data files that you can see in the data folder in your Weka installation. They will
+ also include the simple.arff file, which is based on the data set presented in lecture, and which is included with this
+ assignment.
+
+You will be provided with the SimpleWeka.java driver program for exercising the classifier and obtaining results. The
+driver class will instantiate your classifier and pass the command line arguments as Weka options. The driver will also
+invoke the Weka API evaluation methods for assessing performance. Each run of the program will exercise one test case.
+
+You will find helpful information in the “Writing a New Classifier” section in Chapter 18 (“Extending Weka”) in the Weka
+manual that is included in your Weka distribution. Also helpful, although by no means required, is the book,
+“Data Mining: Practical Machine Learning Tools and Techniques, ” by Ian Witten an Eibe Frank, 2nd edition,
+Morgan Freeman (2005). There is also much material online about Weka and how to use it.
+
+As always, once you have obtained the necessary background, you must absolutely develop, test, and debug your own code.
+Teams of two are permitted, but you must inform the instructor by Webcourses message prior to the due date. UCF’s Golden
+Rule applies. What you submit must be your own or your team's own work.
+
+Be sure to start working on this assignment as soon as possible. This is not an assignment that can be done in one
+evening by a novice. Most of you will need some time to develop a classifier and integrate it with Weka. Do not
+underestimate the amount of time that will be required for test and debug. Whatever IDE you use, you will need to use
+its debugger.
+
+With the above in mind, here are the specific requirements:
+
+You must submit exactly one zip file on Webcourses. The file can be named anything you like. Your zip file must contain
+only your Java source files, including the version of SimpleWeka.java that you wish us to use with your classifier, even
+if you have not modified it. Do NOT include any class files, weka.jar, or any IDE project files.
+You must use the SimpleWeka.java driver file to exercise your program. The program entry point MUST BE the Main method
+in this class and it must take the following three command line parameters, in the following order: (a) the data file
+name (a String), (b) the number of training epochs (an integer), and (c) the learning constant (a decimal real value).
+Your classifier must be defined in a class called “Perceptron”, which must extend the weka.classifiers.Classifier class
+and it must also implement the weka.core.OptionHandler interface, both of which are in the weka.jar file that came with
+your Weka distribution. You will need to add weka.jar to your IDE project classpath, but do not include it in the zip
+file. Your Perceptron.java class must explicitly implement the Perceptron training algorithm described in lecture. In
+particular, it must expressly implement a bias with a constant value of 1 and its own weight value.
+A minimal set of methods that your classifier must implement is: (a) buildClassifier(), (b) distributionForInstance(),
+(c) setOptions(), and (d) toString(). The buildClassifier() method will train the classifier using the Perceptron
+algorithm for the number of epochs, using the learning rate constant, and against the data set, all as specified by by
+the values retrieved by the setOptions method. The distributionForInstance() method will simply translate the two output
+classification classes in the input data file (which may be letters or numbers) to the values zero and one, which are
+used by the Weka API methods to distinguish the classification classes.
+The buildClassifier() method must report intermediate results as shown in the out-simple.txt file furnished with this
+assignment. Specifically, for each training epoch, the classifier must report the epoch number (e.g., “Iteration 0:”)
+followed by a binary string containing a value of 1 for each data instance that is successfully classified, or a value
+of 0 if classification is unsuccessful, requiring that the weights be updated.
+The toString() method must report the following data in the format shown in the out-simple.txt sample output file:
+(a) the source file;
+(b) the number of iterations (epochs);
+(c) the learning rate used;
+(d) the total number of time that weight updates were performed during training; and
+(e) the final weight values.
+Files included with this assignment:
+
+===========================
+
+(1) SimpleWeka.javaView in a new window - the driver program for instantiating and exercising the classifier
+
+(2) simple.arffView in a new window - sample data file with nominal class values
+
+(3) out-simple.txtPreview the documentView in a new window - sample output for simple.arff, showing required outputs and formats
+

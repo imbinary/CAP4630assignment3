@@ -1,0 +1,40 @@
+$ java -cp weka.jar:perceptron.jar SimpleWeka simple.arff 10 .2
+Iteration 0: 1001011000
+Iteration 1: 0101111011
+Iteration 2: 1100011001
+Iteration 3: 1100011001
+Iteration 4: 1100011001
+Iteration 5: 1111111011
+Iteration 6: 1110011001
+Iteration 7: 1101101001
+Iteration 8: 1101111111
+Iteration 9: 1111111111
+
+Results:
+
+Correctly Classified Instances          10              100      %
+Incorrectly Classified Instances         0                0      %
+Kappa statistic                          1     
+K&B Relative Info Score               1000      %
+K&B Information Score                   10      bits      1      bits/instance
+Class complexity | order 0              10      bits      1      bits/instance
+Class complexity | scheme                0      bits      0      bits/instance
+Complexity improvement     (Sf)         10      bits      1      bits/instance
+Mean absolute error                      0     
+Root mean squared error                  0     
+Relative absolute error                  0      %
+Root relative squared error              0      %
+Total Number of Instances               10     
+
+Accuracy of Perceptron: 100.00 %
+
+Source file: simple.arff
+
+Number of iterations: 10
+Learning rate: 0.2
+Total # weight updates = 34
+
+Final weights:
+-2.68
+0.17
+8.29
