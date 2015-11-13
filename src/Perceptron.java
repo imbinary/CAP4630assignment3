@@ -1,8 +1,12 @@
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.Instance;
 import weka.core.Utils;
 
+import java.text.DecimalFormat;
 import java.util.Enumeration;
+import java.util.Random;
+
 /**
  * Created by chris on 11/7/15.
  */
@@ -11,17 +15,20 @@ import java.util.Enumeration;
 public class Perceptron extends weka.classifiers.Classifier implements weka.core.OptionHandler {
 
     Instances m_Instances;
-    int m_NumAttributes;
+    boolean start = true;
     int m_Bias = 1;
     int m_NumIterations;
     double m_Learn;
     String m_File;
     int m_alterations;
-    int m_NumWeights;
-    double[] weights;
+    Random rand;
+    double weights[];
 
     public Perceptron() {
         super();
+        rand = new Random();
+        m_alterations=0;
+
     }
 
     @Override
@@ -29,55 +36,101 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
 
 
         m_Instances = new Instances(data);
-        m_NumAttributes = data.numAttributes();
+
         //clean data
         m_Instances.deleteWithMissingClass();
-        m_NumWeights = m_Instances.numClasses()+1;
-        weights = new double[m_NumWeights];
-        for(int k = 0; k<m_NumWeights;k++)
-            weights[k]=5; //initial weight
+
+        // set initial weight to random
+        initWeights(m_Instances);
+
         for (int j = 0; j < m_NumIterations; j++){
             System.out.print("Iteration " + j + " ");
             Enumeration enu = m_Instances.enumerateInstances();
             while (enu.hasMoreElements()) {
                 Instance inst = (Instance) enu.nextElement();
-                Instances g = inst.dataset();
-                Enumeration e = g.enumerateInstances();
-                //while (e.hasMoreElements()) {
-                    Instance h = (Instance) e.nextElement();
-                    int n = h.numValues();
-                    for (int i = 0; i < n; i++) {
-                        System.out.print(h.value(i) );
-                    }
-                    System.out.print("-");
-                //}
-            }
+                // do prediction
+                if(prediction(inst) != inst.classValue()) {
+                    System.out.print("0");
+                    m_alterations++;
+                    updateWeights(inst);
+                }
+                else
+                    System.out.print("1");
+                }
             System.out.println();
         }
     }
 
 
+
+
+    public void updateWeights(Instance data){
+        Enumeration a = data.enumerateAttributes();
+        double delta=1;
+        if(data.classValue()==0.0)
+            delta = -1;
+        while (a.hasMoreElements()) {
+            Attribute att = (Attribute) a.nextElement();
+            weights[att.index()+1] = weights[att.index()+1] + (m_Learn * delta * data.value(att));
+        }
+        weights[0] = weights[0] + (m_Learn * delta * m_Bias);
+    }
+
+    public double prediction(Instance inst){
+        double sum=0;
+        Enumeration a = inst.enumerateAttributes();
+        while (a.hasMoreElements()) {
+            Attribute att = (Attribute) a.nextElement();
+            sum += inst.value(att) * weights[att.index()+1];
+        }
+        sum += m_Bias * weights[0];
+        if(sum >0)
+            return 1;
+        return 0;
+    }
+
+
+
+    public void initWeights(Instances data){
+        weights = new double[data.numAttributes()+1];
+        start = false;
+        for(int i=0; i< data.numAttributes()+1;i++)
+            weights[i] = rand.nextDouble();
+
+    }
+
     @Override
     public String toString() {
-
+        DecimalFormat df = new DecimalFormat("#0.00");
         StringBuffer buffer = new StringBuffer();
         buffer.append("Source file: " + m_File + "\n\n");
         buffer.append("Number of iterations: " + m_NumIterations + "\n");
         buffer.append("Learning rate: " + m_Learn + "\n");
-        buffer.append("Total # weight updates =  " + "\n\n");
+        buffer.append("Total # weight updates =  " + m_alterations+"\n\n");
 
 
-
-    //    -2.68
-      //  0.17
-        //8.29
         buffer.append("Final weights:\n");
+        for(double w : weights)
+            buffer.append(df.format(w) + "\n");
         return buffer.toString();
 
     }
 
-    public void distributionForInstance(){
+    public double[] distributionForInstance(Instance inst) throws Exception {
 
+        Enumeration a = inst.enumerateAttributes();
+        while (a.hasMoreElements()) {
+            Attribute att = (Attribute) a.nextElement();
+            att.setWeight(weights[att.index()]);
+
+        }
+
+        double[] result = new double[2];
+        double p = prediction(inst);
+        result[0]=1-p;
+        result[1]=1-result[0];
+        //System.out.print(result[0]+ " "+ result[1]+ " ");
+        return result;
     }
 
     public void setOptions(String[] options) throws Exception {
@@ -99,8 +152,5 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
 
     }
 
-    public double classifyInstance(Instance inst){
-        return 1;
-    }
 
 }
