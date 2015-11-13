@@ -2,6 +2,7 @@ import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.Instance;
 import weka.core.Utils;
+import weka.filters.Filter;
 
 import java.text.DecimalFormat;
 import java.util.Enumeration;
@@ -41,7 +42,7 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
         m_Instances.deleteWithMissingClass();
 
         // set initial weight to random
-        initWeights(m_Instances);
+        initWeights(m_Instances.firstInstance().dataset());
 
         for (int j = 0; j < m_NumIterations; j++){
             System.out.print("Iteration " + j + " ");
@@ -71,6 +72,8 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
             delta = -1;
         while (a.hasMoreElements()) {
             Attribute att = (Attribute) a.nextElement();
+            if(att.index()==data.classIndex())
+                continue;
             weights[att.index()+1] = weights[att.index()+1] + (m_Learn * delta * data.value(att));
         }
         weights[0] = weights[0] + (m_Learn * delta * m_Bias);
@@ -78,10 +81,15 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
 
     public double prediction(Instance inst){
         double sum=0;
+        int i = inst.classIndex();
+       // System.out.print(i+ " | ");
         Enumeration a = inst.enumerateAttributes();
         while (a.hasMoreElements()) {
             Attribute att = (Attribute) a.nextElement();
+            if(att.index()==inst.classIndex())
+                continue;
             sum += inst.value(att) * weights[att.index()+1];
+            //System.out.print(inst.value(att)+ " ");
         }
         sum += m_Bias * weights[0];
         if(sum >0)
@@ -92,11 +100,17 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
 
 
     public void initWeights(Instances data){
-        weights = new double[data.numAttributes()+1];
-        start = false;
-        for(int i=0; i< data.numAttributes()+1;i++)
-            weights[i] = rand.nextDouble();
+        Enumeration enu = data.enumerateInstances();
+        Instance inst;
+        if ( enu.hasMoreElements() ) {
+            inst = (Instance) enu.nextElement();
 
+            weights = new double[inst.numAttributes()];
+            start = false;
+            for (int i = 0; i < inst.numAttributes(); i++)
+                weights[i] = rand.nextDouble();
+
+        }
     }
 
     @Override
