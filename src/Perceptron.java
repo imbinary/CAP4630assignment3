@@ -40,7 +40,7 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
 
         //clean data
         m_Instances.deleteWithMissingClass();
-
+        addBias(m_Instances);
         // set initial weight to random
         initWeights(m_Instances.firstInstance().dataset());
 
@@ -59,10 +59,31 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
                     System.out.print("1");
                 }
             System.out.println();
+
         }
+        setWeights(m_Instances.lastInstance().dataset().firstInstance());
     }
 
+    public void setWeights(Instance data){
+        weights = new double[data.numAttributes()-1];
+        Enumeration a = data.enumerateAttributes();
+        while (a.hasMoreElements()) {
+            Attribute att = (Attribute) a.nextElement();
+            if(att.index()==data.classIndex())
+                continue;
+            weights[att.index()] = att.weight();
+        }
 
+    }
+
+    public void addBias(Instances data){
+
+        data.insertAttributeAt(new Attribute("bias"), 0);
+        for (int i = 0; i < data.numInstances(); i++) {
+            data.instance(i).setValue(0, m_Bias);
+        }
+
+    }
 
 
     public void updateWeights(Instance data){
@@ -74,24 +95,19 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
             Attribute att = (Attribute) a.nextElement();
             if(att.index()==data.classIndex())
                 continue;
-            weights[att.index()+1] = weights[att.index()+1] + (m_Learn * delta * data.value(att));
+            att.setWeight( att.weight() + (m_Learn * delta * data.value(att)));
         }
-        weights[0] = weights[0] + (m_Learn * delta * m_Bias);
     }
 
     public double prediction(Instance inst){
         double sum=0;
-        int i = inst.classIndex();
-       // System.out.print(i+ " | ");
         Enumeration a = inst.enumerateAttributes();
         while (a.hasMoreElements()) {
             Attribute att = (Attribute) a.nextElement();
             if(att.index()==inst.classIndex())
                 continue;
-            sum += inst.value(att) * weights[att.index()+1];
-            //System.out.print(inst.value(att)+ " ");
+            sum += inst.value(att) * att.weight();
         }
-        sum += m_Bias * weights[0];
         if(sum >0)
             return 1;
         return 0;
@@ -101,14 +117,17 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
 
     public void initWeights(Instances data){
         Enumeration enu = data.enumerateInstances();
-        Instance inst;
         if ( enu.hasMoreElements() ) {
-            inst = (Instance) enu.nextElement();
-
-            weights = new double[inst.numAttributes()];
+            Instance inst = (Instance) enu.nextElement();
             start = false;
-            for (int i = 0; i < inst.numAttributes(); i++)
-                weights[i] = rand.nextDouble();
+            Enumeration a = inst.enumerateAttributes();
+            while (a.hasMoreElements()) {
+                Attribute att = (Attribute) a.nextElement();
+                if(att.index()==inst.classIndex())
+                    continue;
+                double r = rand.nextDouble();
+                att.setWeight(r);
+            }
 
         }
     }
@@ -131,6 +150,12 @@ public class Perceptron extends weka.classifiers.Classifier implements weka.core
     }
 
     public double[] distributionForInstance(Instance inst) throws Exception {
+
+
+        System.out.println("\n" + inst);
+        inst.dataset().insertAttributeAt(new Attribute("bias"), 0);
+        inst.dataset().firstInstance().setValue(0, m_Bias);
+        System.out.println("\n" + inst);
 
         Enumeration a = inst.enumerateAttributes();
         while (a.hasMoreElements()) {
