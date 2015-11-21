@@ -1,3 +1,9 @@
+/**
+ * UCF
+ * CAP4630 Fall 2015 Assignment 3
+ * William Orem and Austin Pantoja
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
@@ -9,7 +15,9 @@ import weka.classifiers.evaluation.NominalPrediction;
 import weka.core.FastVector;
 import weka.core.Instances;
  
+
 public class SimpleWeka {
+
 	private static DecimalFormat df = new DecimalFormat("0.00"); 
 	
 	public static BufferedReader readDataFile(String filename) {
